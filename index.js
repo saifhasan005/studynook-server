@@ -4,36 +4,46 @@ const dotenv = require('dotenv')
 const { MongoClient, ServerApiVersion } = require('mongodb');
 
 dotenv.config()
-const uri =process.env.MONGODB_URI;
+const uri = process.env.MONGODB_URI;
 
-app.use(cors())
 const app = express()
+app.use(cors())
+app.use(express.json())
 const PORT = process.env.PORT;
 
 
 const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  }
+    serverApi: {
+        version: ServerApiVersion.v1,
+        strict: true,
+        deprecationErrors: true,
+    }
 });
 
 async function run() {
-  try {
-    await client.connect();
+    try {
+        await client.connect();
+        const db = client.db('studynook')
+        const roomCollection = db.collection('studyNookCollection')
 
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
-  } finally {
-    // Ensures that the client will close when you finish/error
-    await client.close();
-  }
+        app.post('/rooms', async (req, res) => {
+            const rooms = req.body
+            console.log('Room Data', rooms);
+            const result = roomCollection.insertOne(rooms);
+            res.json(result);
+        })
+
+        await client.db("admin").command({ ping: 1 });
+        console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    } finally {
+        // Ensures that the client will close when you finish/error
+        // await client.close();
+    }
 }
 run().catch(console.dir)
-app.get('/', (req,res)=>{
+app.get('/', (req, res) => {
     res.send('server is running good')
 })
-app.listen(PORT, ()=>{
+app.listen(PORT, () => {
     console.log(`server running on port${PORT}`);
 })
