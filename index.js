@@ -35,9 +35,15 @@ async function run() {
             res.json(result);
         });
         app.get('/rooms' , async(req,res)=>{
+            const result = await roomCollection.find().sort({ _id: -1 }).limit(6).toArray()
+            res.send(result)
+        })
+        app.get('/rooms' , async(req,res)=>{
             const result = await roomCollection.find().toArray()
             res.send(result)
         })
+
+
 
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
