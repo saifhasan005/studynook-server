@@ -27,10 +27,16 @@ async function run() {
         const roomCollection = db.collection('studyNookCollection')
 
         app.post('/rooms', async (req, res) => {
-            const rooms = req.body
+            const rooms = req.body;
             console.log('Room Data', rooms);
-            const result = roomCollection.insertOne(rooms);
+            const result = await roomCollection.insertOne(rooms);
+
+           
             res.json(result);
+        });
+        app.get('/rooms' , async(req,res)=>{
+            const result = await roomCollection.find().toArray()
+            res.send(result)
         })
 
         await client.db("admin").command({ ping: 1 });
