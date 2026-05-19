@@ -31,15 +31,21 @@ async function run() {
             console.log('Room Data', rooms);
             const result = await roomCollection.insertOne(rooms);
 
-           
+
             res.json(result);
         });
-        app.get('/rooms' , async(req,res)=>{
+        app.get('/rooms/featured', async (req, res) => {
             const result = await roomCollection.find().sort({ _id: -1 }).limit(6).toArray()
             res.send(result)
         })
-        app.get('/rooms' , async(req,res)=>{
+        app.get('/rooms', async (req, res) => {
             const result = await roomCollection.find().toArray()
+            res.send(result)
+        })
+        const { ObjectId } = require('mongodb');
+        app.get('/rooms/:id', async (req, res) => {
+            const { id } = req.params;
+            const result = await roomCollection.findOne({ _id: new ObjectId(id) })
             res.send(result)
         })
 
