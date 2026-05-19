@@ -25,6 +25,7 @@ async function run() {
         await client.connect();
         const db = client.db('studynook')
         const roomCollection = db.collection('studyNookCollection')
+        const bookingCollection = db.collection('booking')
 
         app.post('/rooms', async (req, res) => {
             const rooms = req.body;
@@ -46,6 +47,11 @@ async function run() {
         app.get('/rooms/:id', async (req, res) => {
             const { id } = req.params;
             const result = await roomCollection.findOne({ _id: new ObjectId(id) })
+            res.send(result)
+        })
+        app.post('/booking', async(req,res)=>{
+            const bookingRoom = req.body;
+            const result =  await bookingCollection.insertOne(bookingRoom)
             res.send(result)
         })
 
