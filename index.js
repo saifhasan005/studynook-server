@@ -47,6 +47,16 @@ async function run() {
             const result = await roomCollection.findOne({ _id: new ObjectId(id) })
             res.send(result)
         });
+        app.patch('/rooms/:id', async(req,res)=>{
+            const {id} = req.params
+            const UpdatedRoom = req.body
+            console.log(UpdatedRoom);
+            const result = await roomCollection.updateOne(
+                {_id: new ObjectId(id)},
+                {$set: UpdatedRoom}
+            )
+            res.send(result)
+        })
 
         app.get('/booking', async (req, res) => {
             const { roomId, date } = req.query;
@@ -56,6 +66,11 @@ async function run() {
             const bookings = await bookingCollection.find(query).toArray();
             res.send(bookings);
         });
+        app.delete('/rooms/:id', async(req,res)=>{
+          const {id} = req.params;
+          const result = await roomCollection.deleteOne({_id: new ObjectId(id)})
+          res.json(result);  
+        })
 
 
         app.post('/booking', async (req, res) => {
@@ -140,6 +155,18 @@ async function run() {
             res.send(result);
 
         })
+        app.patch('/booking/:bookingId', async (req, res) => {
+            try {
+                const { bookingId } = req.params;
+                const result = await bookingCollection.updateOne(
+                    { _id: new ObjectId(bookingId) },
+                    { $set: { status: "canceled" } }
+                );
+                res.send(result);
+            } catch (error) {
+                res.status(500).send({ message: error.message });
+            }
+        });
 
         await client.db("admin").command({ ping: 1 });
         console.log("Successfully connected to MongoDB!");
